@@ -24,12 +24,12 @@ body{margin:0;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo
 .code-tab.active{color:var(--text);border-bottom:2px solid var(--active)}
 .copy-btn{margin-left:auto;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);font-size:12px;padding:0.3rem 0.55rem;border-radius:4px;cursor:pointer}
 .copy-btn:hover{background:var(--btn-hover)}
-.code-panel{display:none;padding:0.85rem 0.9rem;overflow:auto}
+.code-panel{display:none;overflow:auto}
 .code-panel.active{display:block}
-pre{margin:0;line-height:1.5;font-size:12px;white-space:pre}
-.line{display:grid;grid-template-columns:2.5em 1fr;column-gap:0.8em}
-.line-no{color:#6c7086;text-align:right;border-right:1px solid #313244;padding-right:0.8em;user-select:none}
-.line-content{white-space:pre}
+pre{margin:0;padding:0.85rem 0;line-height:1.5;font-size:12px;white-space:pre;min-width:max-content}
+.line{display:flex;align-items:flex-start}
+.line-no{position:sticky;left:0;flex:0 0 auto;width:2.5em;padding:0 0.8em 0 0.9rem;text-align:right;color:#6c7086;border-right:1px solid #313244;user-select:none;background:var(--surface);z-index:1}
+.line-content{flex:0 0 auto;padding:0 0.9rem 0 0.8em;white-space:pre}
 .cm{color:#6c7086}.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nb{color:#fab387}
 </style>
 </head>
@@ -40,59 +40,42 @@ pre{margin:0;line-height:1.5;font-size:12px;white-space:pre}
     <button class="code-tab" onclick="switchTab(this, 'sex-py')">Python</button>
     <button class="code-tab" onclick="switchTab(this, 'sex-r')">R</button>
   <button class="copy-btn" onclick="copyActive(this)">Copy</button></div>
-  <div id="sex-sql" class="code-panel active"><pre><span class="kw">SELECT</span> sex, <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount
-<span class="kw">FROM</span> Project_12345..Demography_Current
-<span class="kw">GROUP BY</span> sex</pre></div>
-  <div id="sex-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
-    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
-        SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
-        FROM Project_12345..Demography_Current
-        GROUP BY sex
-    """</span>, conn)
-
-df</pre></div>
-  <div id="sex-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
-    SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
-    FROM Project_12345..Demography_Current
-    GROUP BY sex
-"</span>)
-
-df</pre></div>
+  <div id="sex-sql" class="code-panel active"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="kw">SELECT</span> sex, <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount</span></span><span class="line"><span class="line-no">2</span><span class="line-content"><span class="kw">FROM</span> Project_12345..Demography_Current</span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="kw">GROUP BY</span> sex</span></span></pre></div>
+  <div id="sex-py" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:</span></span><span class="line"><span class="line-no">2</span><span class="line-content">    df = pd.<span class="fn">read_sql</span>(<span class="st">"""</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">        SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">        FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content"><span class="st">        GROUP BY sex</span></span></span><span class="line"><span class="line-no">6</span><span class="line-content"><span class="st">    """</span>, conn)</span></span><span class="line"><span class="line-no">7</span><span class="line-content"> </span></span><span class="line"><span class="line-no">8</span><span class="line-content">df</span></span></pre></div>
+  <div id="sex-r" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content">df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"</span></span></span><span class="line"><span class="line-no">2</span><span class="line-content"><span class="st">    SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">    FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">    GROUP BY sex</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content"><span class="st">"</span>)</span></span><span class="line"><span class="line-no">6</span><span class="line-content"> </span></span><span class="line"><span class="line-no">7</span><span class="line-content">df</span></span></pre></div>
 </div>
 <script>
 function switchTab(button, panelId) {
-  const block = button.closest('.snippet');
-  block.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  var block = button.closest('.snippet');
+  block.querySelectorAll('.code-tab').forEach(function (t) { t.classList.remove('active'); });
   button.classList.add('active');
-  block.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
-  block.querySelector('#' + panelId).classList.add('active');
-}
-function addLineNumbers() {
-  document.querySelectorAll('pre').forEach(pre => {
-    const html = pre.innerHTML.replace(/
-$/, '');
-    const lines = html.split('
-');
-    pre.innerHTML = lines.map((line, idx) => (
-      `<span class="line"><span class="line-no">${idx + 1}</span><span class="line-content">${line || ' '}</span></span>`
-    )).join('');
-  });
+  block.querySelectorAll('.code-panel').forEach(function (p) { p.classList.remove('active'); });
+  var panel = block.querySelector('#' + panelId);
+  if (panel) panel.classList.add('active');
 }
 async function copyActive(btn) {
-  const block = btn.closest('.snippet');
-  const activePre = block.querySelector('.code-panel.active pre');
-  const text = activePre ? activePre.innerText : '';
+  var block = btn.closest('.snippet');
+  var activePanel = block.querySelector('.code-panel.active');
+  var text = '';
+  if (activePanel) {
+    var contents = activePanel.querySelectorAll('.line-content');
+    if (contents.length) {
+      text = Array.prototype.map.call(contents, function (n) { return n.innerText; }).join('\n');
+    } else {
+      var pre = activePanel.querySelector('pre');
+      text = pre ? pre.innerText : '';
+    }
+  }
   try {
     await navigator.clipboard.writeText(text);
-    const old = btn.textContent;
+    var old = btn.textContent;
     btn.textContent = 'Copied';
-    setTimeout(() => btn.textContent = old, 1200);
+    setTimeout(function () { btn.textContent = old; }, 1200);
   } catch (e) {
     btn.textContent = 'Copy failed';
-    setTimeout(() => btn.textContent = 'Copy', 1200);
+    setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
   }
 }
-document.addEventListener('DOMContentLoaded', addLineNumbers);
 </script>
 </body>
 </html>

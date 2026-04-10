@@ -24,12 +24,12 @@ body{margin:0;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo
 .code-tab.active{color:var(--text);border-bottom:2px solid var(--active)}
 .copy-btn{margin-left:auto;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);font-size:12px;padding:0.3rem 0.55rem;border-radius:4px;cursor:pointer}
 .copy-btn:hover{background:var(--btn-hover)}
-.code-panel{display:none;padding:0.85rem 0.9rem;overflow:auto}
+.code-panel{display:none;overflow:auto}
 .code-panel.active{display:block}
-pre{margin:0;line-height:1.5;font-size:12px;white-space:pre}
-.line{display:grid;grid-template-columns:2.5em 1fr;column-gap:0.8em}
-.line-no{color:#6c7086;text-align:right;border-right:1px solid #313244;padding-right:0.8em;user-select:none}
-.line-content{white-space:pre}
+pre{margin:0;padding:0.85rem 0;line-height:1.5;font-size:12px;white-space:pre;min-width:max-content}
+.line{display:flex;align-items:flex-start}
+.line-no{position:sticky;left:0;flex:0 0 auto;width:2.5em;padding:0 0.8em 0 0.9rem;text-align:right;color:#6c7086;border-right:1px solid #313244;user-select:none;background:var(--surface);z-index:1}
+.line-content{flex:0 0 auto;padding:0 0.9rem 0 0.8em;white-space:pre}
 .cm{color:#6c7086}.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nb{color:#fab387}
 </style>
 </head>
@@ -40,132 +40,42 @@ pre{margin:0;line-height:1.5;font-size:12px;white-space:pre}
     <button class="code-tab" onclick="switchTab(this, 'rxcount-py')">Python</button>
     <button class="code-tab" onclick="switchTab(this, 'rxcount-r')">R</button>
   <button class="copy-btn" onclick="copyActive(this)">Copy</button></div>
-  <div id="rxcount-sql" class="code-panel active"><pre><span class="kw">SELECT</span>
-    <span class="kw">CASE</span>
-        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
-        <span class="kw">ELSE</span> <span class="st">'80+'</span>
-    <span class="kw">END AS</span> AgeGroup,
-    i.Approved_Name,
-    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> PrescriptionCount
-<span class="kw">FROM</span> Project_12345..Prescribing_Scripts s
-<span class="kw">INNER JOIN</span> Project_12345..Prescribing_Scripts_Prescribing_Item i
-    <span class="kw">ON</span> s.hic_drugID = i.hic_drugID
-<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
-    <span class="kw">ON</span> s.PROCHI = d.PROCHI
-<span class="kw">GROUP BY</span>
-    <span class="kw">CASE</span>
-        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
-        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
-        <span class="kw">ELSE</span> <span class="st">'80+'</span>
-    <span class="kw">END</span>,
-    i.Approved_Name
-<span class="kw">ORDER BY</span> PrescriptionCount <span class="kw">DESC</span></pre></div>
-  <div id="rxcount-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
-    scripts = pd.<span class="fn">read_sql</span>(<span class="st">"""
-        SELECT s.PROCHI, s.hic_drugID
-        FROM Project_12345..Prescribing_Scripts s
-    """</span>, conn)
-
-    items = pd.<span class="fn">read_sql</span>(<span class="st">"""
-        SELECT hic_drugID, Approved_Name
-        FROM Project_12345..Prescribing_Scripts_Prescribing_Item
-    """</span>, conn)
-
-    demog = pd.<span class="fn">read_sql</span>(<span class="st">"""
-        SELECT PROCHI, Calculated_Age
-        FROM Project_12345..Demography_Current
-    """</span>, conn)
-
-<span class="cm"># Merge the three tables</span>
-df = scripts.<span class="fn">merge</span>(items, on=<span class="st">"hic_drugID"</span>).<span class="fn">merge</span>(demog, on=<span class="st">"PROCHI"</span>)
-
-<span class="cm"># Create age bands in 10-year intervals</span>
-bins = [<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">200</span>]
-labels = [<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>]
-df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)
-
-<span class="cm"># Count prescription records per age group and drug</span>
-result = (df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"Approved_Name"</span>])
-            .<span class="fn">size</span>()
-            .<span class="fn">reset_index</span>(name=<span class="st">"PrescriptionCount"</span>)
-            .<span class="fn">sort_values</span>(<span class="st">"PrescriptionCount"</span>, ascending=<span class="kw">False</span>))
-result</pre></div>
-  <div id="rxcount-r" class="code-panel"><pre><span class="cm"># Load all three tables</span>
-scripts <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
-    SELECT PROCHI, hic_drugID
-    FROM Project_12345..Prescribing_Scripts
-"</span>)
-
-items <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
-    SELECT hic_drugID, Approved_Name
-    FROM Project_12345..Prescribing_Scripts_Prescribing_Item
-"</span>)
-
-demog <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
-    SELECT PROCHI, Calculated_Age
-    FROM Project_12345..Demography_Current
-"</span>)
-
-<span class="cm"># Merge and create age bands</span>
-df <span class="kw">&lt;-</span> <span class="fn">merge</span>(<span class="fn">merge</span>(scripts, items, by = <span class="st">"hic_drugID"</span>), demog, by = <span class="st">"PROCHI"</span>)
-
-df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,
-                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">Inf</span>),
-                   labels = <span class="fn">c</span>(<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>,
-                              <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>),
-                   right = <span class="kw">FALSE</span>)
-
-<span class="cm"># Count prescription records</span>
-result <span class="kw">&lt;-</span> <span class="fn">aggregate</span>(hic_drugID ~ AgeGroup + Approved_Name, data = df, FUN = length)
-<span class="fn">names</span>(result)[<span class="nb">3</span>] <span class="kw">&lt;-</span> <span class="st">"PrescriptionCount"</span>
-result <span class="kw">&lt;-</span> result[<span class="fn">order</span>(-result$PrescriptionCount), ]
-<span class="fn">head</span>(result, <span class="nb">20</span>)</pre></div>
+  <div id="rxcount-sql" class="code-panel active"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="kw">SELECT</span></span></span><span class="line"><span class="line-no">2</span><span class="line-content">    <span class="kw">CASE</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span></span></span><span class="line"><span class="line-no">6</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span></span></span><span class="line"><span class="line-no">7</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span></span></span><span class="line"><span class="line-no">8</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span></span></span><span class="line"><span class="line-no">9</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span></span></span><span class="line"><span class="line-no">10</span><span class="line-content">        <span class="kw">ELSE</span> <span class="st">'80+'</span></span></span><span class="line"><span class="line-no">11</span><span class="line-content">    <span class="kw">END AS</span> AgeGroup,</span></span><span class="line"><span class="line-no">12</span><span class="line-content">    i.Approved_Name,</span></span><span class="line"><span class="line-no">13</span><span class="line-content">    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> PrescriptionCount</span></span><span class="line"><span class="line-no">14</span><span class="line-content"><span class="kw">FROM</span> Project_12345..Prescribing_Scripts s</span></span><span class="line"><span class="line-no">15</span><span class="line-content"><span class="kw">INNER JOIN</span> Project_12345..Prescribing_Scripts_Prescribing_Item i</span></span><span class="line"><span class="line-no">16</span><span class="line-content">    <span class="kw">ON</span> s.hic_drugID = i.hic_drugID</span></span><span class="line"><span class="line-no">17</span><span class="line-content"><span class="kw">INNER JOIN</span> Project_12345..Demography_Current d</span></span><span class="line"><span class="line-no">18</span><span class="line-content">    <span class="kw">ON</span> s.PROCHI = d.PROCHI</span></span><span class="line"><span class="line-no">19</span><span class="line-content"><span class="kw">GROUP BY</span></span></span><span class="line"><span class="line-no">20</span><span class="line-content">    <span class="kw">CASE</span></span></span><span class="line"><span class="line-no">21</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span></span></span><span class="line"><span class="line-no">22</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span></span></span><span class="line"><span class="line-no">23</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span></span></span><span class="line"><span class="line-no">24</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span></span></span><span class="line"><span class="line-no">25</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span></span></span><span class="line"><span class="line-no">26</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span></span></span><span class="line"><span class="line-no">27</span><span class="line-content">        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span></span></span><span class="line"><span class="line-no">28</span><span class="line-content">        <span class="kw">ELSE</span> <span class="st">'80+'</span></span></span><span class="line"><span class="line-no">29</span><span class="line-content">    <span class="kw">END</span>,</span></span><span class="line"><span class="line-no">30</span><span class="line-content">    i.Approved_Name</span></span><span class="line"><span class="line-no">31</span><span class="line-content"><span class="kw">ORDER BY</span> PrescriptionCount <span class="kw">DESC</span></span></span></pre></div>
+  <div id="rxcount-py" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:</span></span><span class="line"><span class="line-no">2</span><span class="line-content">    scripts = pd.<span class="fn">read_sql</span>(<span class="st">"""</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">        SELECT s.PROCHI, s.hic_drugID</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">        FROM Project_12345..Prescribing_Scripts s</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content"><span class="st">    """</span>, conn)</span></span><span class="line"><span class="line-no">6</span><span class="line-content"> </span></span><span class="line"><span class="line-no">7</span><span class="line-content">    items = pd.<span class="fn">read_sql</span>(<span class="st">"""</span></span></span><span class="line"><span class="line-no">8</span><span class="line-content"><span class="st">        SELECT hic_drugID, Approved_Name</span></span></span><span class="line"><span class="line-no">9</span><span class="line-content"><span class="st">        FROM Project_12345..Prescribing_Scripts_Prescribing_Item</span></span></span><span class="line"><span class="line-no">10</span><span class="line-content"><span class="st">    """</span>, conn)</span></span><span class="line"><span class="line-no">11</span><span class="line-content"> </span></span><span class="line"><span class="line-no">12</span><span class="line-content">    demog = pd.<span class="fn">read_sql</span>(<span class="st">"""</span></span></span><span class="line"><span class="line-no">13</span><span class="line-content"><span class="st">        SELECT PROCHI, Calculated_Age</span></span></span><span class="line"><span class="line-no">14</span><span class="line-content"><span class="st">        FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">15</span><span class="line-content"><span class="st">    """</span>, conn)</span></span><span class="line"><span class="line-no">16</span><span class="line-content"> </span></span><span class="line"><span class="line-no">17</span><span class="line-content"><span class="cm"># Merge the three tables</span></span></span><span class="line"><span class="line-no">18</span><span class="line-content">df = scripts.<span class="fn">merge</span>(items, on=<span class="st">"hic_drugID"</span>).<span class="fn">merge</span>(demog, on=<span class="st">"PROCHI"</span>)</span></span><span class="line"><span class="line-no">19</span><span class="line-content"> </span></span><span class="line"><span class="line-no">20</span><span class="line-content"><span class="cm"># Create age bands in 10-year intervals</span></span></span><span class="line"><span class="line-no">21</span><span class="line-content">bins = [<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">200</span>]</span></span><span class="line"><span class="line-no">22</span><span class="line-content">labels = [<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>]</span></span><span class="line"><span class="line-no">23</span><span class="line-content">df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)</span></span><span class="line"><span class="line-no">24</span><span class="line-content"> </span></span><span class="line"><span class="line-no">25</span><span class="line-content"><span class="cm"># Count prescription records per age group and drug</span></span></span><span class="line"><span class="line-no">26</span><span class="line-content">result = (df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"Approved_Name"</span>])</span></span><span class="line"><span class="line-no">27</span><span class="line-content">            .<span class="fn">size</span>()</span></span><span class="line"><span class="line-no">28</span><span class="line-content">            .<span class="fn">reset_index</span>(name=<span class="st">"PrescriptionCount"</span>)</span></span><span class="line"><span class="line-no">29</span><span class="line-content">            .<span class="fn">sort_values</span>(<span class="st">"PrescriptionCount"</span>, ascending=<span class="kw">False</span>))</span></span><span class="line"><span class="line-no">30</span><span class="line-content">result</span></span></pre></div>
+  <div id="rxcount-r" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="cm"># Load all three tables</span></span></span><span class="line"><span class="line-no">2</span><span class="line-content">scripts <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">    SELECT PROCHI, hic_drugID</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">    FROM Project_12345..Prescribing_Scripts</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content"><span class="st">"</span>)</span></span><span class="line"><span class="line-no">6</span><span class="line-content"> </span></span><span class="line"><span class="line-no">7</span><span class="line-content">items <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"</span></span></span><span class="line"><span class="line-no">8</span><span class="line-content"><span class="st">    SELECT hic_drugID, Approved_Name</span></span></span><span class="line"><span class="line-no">9</span><span class="line-content"><span class="st">    FROM Project_12345..Prescribing_Scripts_Prescribing_Item</span></span></span><span class="line"><span class="line-no">10</span><span class="line-content"><span class="st">"</span>)</span></span><span class="line"><span class="line-no">11</span><span class="line-content"> </span></span><span class="line"><span class="line-no">12</span><span class="line-content">demog <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"</span></span></span><span class="line"><span class="line-no">13</span><span class="line-content"><span class="st">    SELECT PROCHI, Calculated_Age</span></span></span><span class="line"><span class="line-no">14</span><span class="line-content"><span class="st">    FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">15</span><span class="line-content"><span class="st">"</span>)</span></span><span class="line"><span class="line-no">16</span><span class="line-content"> </span></span><span class="line"><span class="line-no">17</span><span class="line-content"><span class="cm"># Merge and create age bands</span></span></span><span class="line"><span class="line-no">18</span><span class="line-content">df <span class="kw">&lt;-</span> <span class="fn">merge</span>(<span class="fn">merge</span>(scripts, items, by = <span class="st">"hic_drugID"</span>), demog, by = <span class="st">"PROCHI"</span>)</span></span><span class="line"><span class="line-no">19</span><span class="line-content"> </span></span><span class="line"><span class="line-no">20</span><span class="line-content">df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,</span></span><span class="line"><span class="line-no">21</span><span class="line-content">                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">Inf</span>),</span></span><span class="line"><span class="line-no">22</span><span class="line-content">                   labels = <span class="fn">c</span>(<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>,</span></span><span class="line"><span class="line-no">23</span><span class="line-content">                              <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>),</span></span><span class="line"><span class="line-no">24</span><span class="line-content">                   right = <span class="kw">FALSE</span>)</span></span><span class="line"><span class="line-no">25</span><span class="line-content"> </span></span><span class="line"><span class="line-no">26</span><span class="line-content"><span class="cm"># Count prescription records</span></span></span><span class="line"><span class="line-no">27</span><span class="line-content">result <span class="kw">&lt;-</span> <span class="fn">aggregate</span>(hic_drugID ~ AgeGroup + Approved_Name, data = df, FUN = length)</span></span><span class="line"><span class="line-no">28</span><span class="line-content"><span class="fn">names</span>(result)[<span class="nb">3</span>] <span class="kw">&lt;-</span> <span class="st">"PrescriptionCount"</span></span></span><span class="line"><span class="line-no">29</span><span class="line-content">result <span class="kw">&lt;-</span> result[<span class="fn">order</span>(-result$PrescriptionCount), ]</span></span><span class="line"><span class="line-no">30</span><span class="line-content"><span class="fn">head</span>(result, <span class="nb">20</span>)</span></span></pre></div>
 </div>
 <script>
 function switchTab(button, panelId) {
-  const block = button.closest('.snippet');
-  block.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  var block = button.closest('.snippet');
+  block.querySelectorAll('.code-tab').forEach(function (t) { t.classList.remove('active'); });
   button.classList.add('active');
-  block.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
-  block.querySelector('#' + panelId).classList.add('active');
-}
-function addLineNumbers() {
-  document.querySelectorAll('pre').forEach(pre => {
-    const html = pre.innerHTML.replace(/
-$/, '');
-    const lines = html.split('
-');
-    pre.innerHTML = lines.map((line, idx) => (
-      `<span class="line"><span class="line-no">${idx + 1}</span><span class="line-content">${line || ' '}</span></span>`
-    )).join('');
-  });
+  block.querySelectorAll('.code-panel').forEach(function (p) { p.classList.remove('active'); });
+  var panel = block.querySelector('#' + panelId);
+  if (panel) panel.classList.add('active');
 }
 async function copyActive(btn) {
-  const block = btn.closest('.snippet');
-  const activePre = block.querySelector('.code-panel.active pre');
-  const text = activePre ? activePre.innerText : '';
+  var block = btn.closest('.snippet');
+  var activePanel = block.querySelector('.code-panel.active');
+  var text = '';
+  if (activePanel) {
+    var contents = activePanel.querySelectorAll('.line-content');
+    if (contents.length) {
+      text = Array.prototype.map.call(contents, function (n) { return n.innerText; }).join('\n');
+    } else {
+      var pre = activePanel.querySelector('pre');
+      text = pre ? pre.innerText : '';
+    }
+  }
   try {
     await navigator.clipboard.writeText(text);
-    const old = btn.textContent;
+    var old = btn.textContent;
     btn.textContent = 'Copied';
-    setTimeout(() => btn.textContent = old, 1200);
+    setTimeout(function () { btn.textContent = old; }, 1200);
   } catch (e) {
     btn.textContent = 'Copy failed';
-    setTimeout(() => btn.textContent = 'Copy', 1200);
+    setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
   }
 }
-document.addEventListener('DOMContentLoaded', addLineNumbers);
 </script>
 </body>
 </html>
