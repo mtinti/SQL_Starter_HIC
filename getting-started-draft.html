@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started with Your Project Data</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: #e2e0dc;
+    --text: #2c2c2c;
+    --text-muted: #6b6963;
+    --accent: #1a6b4a;
+    --accent-light: #e8f4ee;
+    --tab-inactive: #f0efec;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --code-comment: #6c7086;
+    --code-keyword: #cba6f7;
+    --code-string: #a6e3a1;
+    --code-function: #89b4fa;
+    --code-number: #fab387;
+    --callout-bg: #f5f0e8;
+    --callout-border: #d4c9b5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p { margin-bottom: 1rem; }
+
+  ul { margin-bottom: 1rem; padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .callout {
+    background: var(--callout-bg);
+    border-left: 3px solid var(--callout-border);
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .callout strong { font-weight: 600; }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--tab-inactive);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+  }
+
+  /* Tab system */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .code-tabs {
+    display: flex;
+    background: #181825;
+    border-bottom: 1px solid #313244;
+  }
+
+  .code-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.55rem 1.2rem;
+    border: none;
+    background: transparent;
+    color: #6c7086;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .code-tab:hover { color: #bac2de; }
+
+  .code-tab.active {
+    color: var(--code-text);
+    background: var(--code-bg);
+    border-bottom: 2px solid var(--code-keyword);
+  }
+
+  .code-panel {
+    display: none;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+  }
+
+  .code-panel.active { display: block; }
+
+  .code-panel pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--code-text);
+    white-space: pre;
+    margin: 0;
+  }
+
+  .cm { color: var(--code-comment); }
+  .kw { color: var(--code-keyword); }
+  .fn { color: var(--code-function); }
+  .st { color: var(--code-string); }
+  .nb { color: var(--code-number); }
+
+  .explanation {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: -0.75rem;
+    margin-bottom: 1.5rem;
+    padding-left: 0.25rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>Getting Started with Your Project Data</h1>
+<p class="subtitle">A guide to exploring your HIC data extract using SQL Server, Python and R.</p>
+
+<h2>Overview</h2>
+<p>Every project is unique and the datasets provided are specific to its needs. This page is an introduction to a few of the most common datasets and a gentle initiation to SQL for querying and linking them together.</p>
+
+<p>When your data extract is delivered, you'll find your project tables in a database named <code>Project_XXXXX</code> (where XXXXX is your project number).</p>
+
+<p>Unless otherwise specified, the unique patient identifier across all datasets is <code>PROCHI</code>. This variable is unique to your project. Every PROCHI represents a single individual in your cohort, and it is the key you use to link tables together.</p>
+
+<h3>Lookup tables</h3>
+<p>Alongside your clinical data you'll find lookup tables that help you decode coded values. These follow a naming convention:</p>
+<ul>
+  <li><strong><code>z_</code></strong> prefix: dataset-specific lookups (e.g. <code>SMR01_Admissions_z_LOCATION</code>, <code>MicroBio_Lab_z_Specimen</code>)</li>
+  <li><strong><code>G_</code></strong> prefix: general reference tables shared across datasets (e.g. <code>G_OPCS3_Codes</code>, <code>G_World_Health_Organisation_ICD10_Codes</code>)</li>
+</ul>
+
+<div class="callout">
+  <strong>Working database:</strong> You also have a <code>Project_XXXXX_Working</code> database. Use this to store any tables you create or modify. Never write back to the main <code>Project_XXXXX</code> database.
+</div>
+
+<h2>Connecting</h2>
+<p>For instructions on how to connect to your project database from SSMS, Python, R and other tools, see <a href="https://hicservices.atlassian.net/wiki/spaces/HIC/pages/How+do+I+connect+to+my+study+s+SQL+database">How do I connect to my study's SQL database?</a> on the HIC Knowledge Base. The examples below assume you already have an open connection.</p>
+
+<h2>Demography</h2>
+
+<p>The Demography dataset contains one row per individual in your project cohort. It holds non-medical information about each patient, including three core columns:</p>
+
+<ul>
+  <li><code>PROCHI</code>: unique patient identifier, used to link across all project tables</li>
+  <li><code>sex</code>: patient's sex at birth</li>
+  <li><code>anon_date_of_birth</code>: anonymised date of birth, mapped to within three months of the true date</li>
+</ul>
+
+<p>Depending on your project, you may also find postcode district, SIMD deprivation metrics (by DataZone), anonymised GP practice, and care home residency flags. Your table will typically be at <code>Project_XXXXX.dbo.Demography_Current</code>.</p>
+
+<h2>Exploring Your Cohort</h2>
+
+<h3>Take a random sample</h3>
+<p>A good first step is to eyeball a small slice of your data. This returns 100 randomly selected rows.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'sample-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'sample-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'sample-r')">R</button>
+  </div>
+  <div id="sample-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">100</span> *
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">ORDER BY</span> <span class="fn">NEWID</span>()</pre></div>
+  <div id="sample-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 100 *
+        FROM Project_12345..Demography_Current
+        ORDER BY NEWID()
+    """</span>, conn)
+
+df.<span class="fn">head</span>()</pre></div>
+  <div id="sample-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 100 *
+    FROM Project_12345..Demography_Current
+    ORDER BY NEWID()
+"</span>)
+
+<span class="fn">head</span>(df)</pre></div>
+</div>
+<p class="explanation"><code>NEWID()</code> assigns a random GUID to each row. Ordering by it shuffles the results, and <code>TOP 100</code> takes the first 100.</p>
+
+
+<h3>Patient count by sex</h3>
+<p>Count the number of distinct patients grouped by sex.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'sex-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'sex-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'sex-r')">R</button>
+  </div>
+  <div id="sex-sql" class="code-panel active"><pre><span class="kw">SELECT</span> sex, <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">GROUP BY</span> sex</pre></div>
+  <div id="sex-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
+        FROM Project_12345..Demography_Current
+        GROUP BY sex
+    """</span>, conn)
+
+df</pre></div>
+  <div id="sex-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
+    FROM Project_12345..Demography_Current
+    GROUP BY sex
+"</span>)
+
+df</pre></div>
+</div>
+
+
+<h3>Patient count by sex with percentages</h3>
+<p>Add a percentage column using a variable to hold the total population. This avoids the cross-join approach, which is less readable and slower on large tables.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'pct-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'pct-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'pct-r')">R</button>
+  </div>
+  <div id="pct-sql" class="code-panel active"><pre><span class="kw">DECLARE</span> @TotalPop <span class="kw">AS INT</span>
+<span class="kw">SELECT</span> @TotalPop = <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI)
+<span class="kw">FROM</span> Project_12345..Demography_Current
+
+<span class="kw">SELECT</span> sex,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) * <span class="nb">100.0</span> / @TotalPop <span class="kw">AS</span> Pct
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">GROUP BY</span> sex</pre></div>
+  <div id="pct-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
+        FROM Project_12345..Demography_Current
+        GROUP BY sex
+    """</span>, conn)
+
+df[<span class="st">"Pct"</span>] = df[<span class="st">"PatientCount"</span>] / df[<span class="st">"PatientCount"</span>].<span class="fn">sum</span>() * <span class="nb">100</span>
+df</pre></div>
+  <div id="pct-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT sex, COUNT(DISTINCT PROCHI) AS PatientCount
+    FROM Project_12345..Demography_Current
+    GROUP BY sex
+"</span>)
+
+df$Pct <span class="kw">&lt;-</span> df$PatientCount / <span class="fn">sum</span>(df$PatientCount) * <span class="nb">100</span>
+df</pre></div>
+</div>
+<p class="explanation">Note: use <code>100.0</code> (not <code>100</code>) in SQL to avoid integer division truncating the result.</p>
+
+
+<h3>Recalculate age into the Working database</h3>
+<p>The <code>Calculated_Age</code> column reflects the patient's age at the time of data extraction. If you need a current age (or want to add any derived column), write the result into your <code>Project_XXXXX_Working</code> database.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'age-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'age-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'age-r')">R</button>
+  </div>
+  <div id="age-sql" class="code-panel active"><pre><span class="cm">-- Create a copy with a recalculated age column</span>
+<span class="kw">SELECT</span> *,
+       <span class="fn">DATEDIFF</span>(year, anon_date_of_birth, <span class="fn">GETDATE</span>()) <span class="kw">AS</span> Recalculated_Age
+<span class="kw">INTO</span> Project_12345_Working..Demog
+<span class="kw">FROM</span> Project_12345..Demography_Current
+
+<span class="cm">-- To refresh the age column later:</span>
+<span class="kw">UPDATE</span> Project_12345_Working..Demog
+<span class="kw">SET</span> Recalculated_Age = <span class="fn">DATEDIFF</span>(year, anon_date_of_birth, <span class="fn">GETDATE</span>())</pre></div>
+  <div id="age-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"SELECT * FROM Project_12345..Demography_Current"</span>, conn)
+
+<span class="cm"># anon_date_of_birth is already a datetime column</span>
+df[<span class="st">"Recalculated_Age"</span>] = (
+    pd.<span class="fn">Timestamp</span>.<span class="fn">now</span>().<span class="fn">year</span> - df[<span class="st">"anon_date_of_birth"</span>].dt.<span class="fn">year</span>
+)
+
+df.<span class="fn">head</span>()</pre></div>
+  <div id="age-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"SELECT * FROM Project_12345..Demography_Current"</span>)
+
+df$Recalculated_Age <span class="kw">&lt;-</span> <span class="fn">as.integer</span>(
+  <span class="fn">format</span>(<span class="fn">Sys.Date</span>(), <span class="st">"%Y"</span>) ) - <span class="fn">as.integer</span>(<span class="fn">format</span>(df$anon_date_of_birth, <span class="st">"%Y"</span>)
+)
+
+<span class="fn">head</span>(df)</pre></div>
+</div>
+
+<div class="callout">
+  <strong>Note on age calculation:</strong> <code>DATEDIFF(year, ...)</code> subtracts the year numbers only. It does not check whether the birthday has occurred yet this year, so it can be off by one. Given that <code>anon_date_of_birth</code> is already anonymised to a quarterly boundary (±3 months), this approximation is acceptable for coarse age bands but worth being aware of.
+</div>
+
+
+<h3>Distribution by sex and age band</h3>
+<p>Group patients into age bands and view the distribution as a cross-tabulation. This uses a temporary table (<code>#temp</code>) to store the intermediate result.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'band-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'band-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'band-r')">R</button>
+  </div>
+  <div id="band-sql" class="code-panel active"><pre><span class="cm">-- Step 1: Build the grouped counts into a temp table</span>
+<span class="kw">SELECT</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END AS</span> AgeGroup,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount
+<span class="kw">INTO</span> #temp
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">GROUP BY</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END</span>
+
+<span class="cm">-- Step 2: Pivot to wide format</span>
+<span class="kw">SELECT</span> AgeGroup,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'M'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Male,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'F'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Female
+<span class="kw">FROM</span> #temp
+<span class="kw">GROUP BY</span> AgeGroup
+
+<span class="cm">-- Clean up</span>
+<span class="kw">DROP TABLE</span> #temp</pre></div>
+  <div id="band-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT sex, Calculated_Age, PROCHI
+        FROM Project_12345..Demography_Current
+    """</span>, conn)
+
+bins = [<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">200</span>]
+labels = [<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>]
+df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)
+
+pivot = df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"sex"</span>])[<span class="st">"PROCHI"</span>].<span class="fn">nunique</span>().<span class="fn">unstack</span>(fill_value=<span class="nb">0</span>)
+pivot.<span class="fn">rename</span>(columns={<span class="st">"M"</span>: <span class="st">"Male"</span>, <span class="st">"F"</span>: <span class="st">"Female"</span>})</pre></div>
+  <div id="band-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT sex, Calculated_Age, PROCHI
+    FROM Project_12345..Demography_Current
+"</span>)
+
+df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,
+                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">Inf</span>),
+                   labels = <span class="fn">c</span>(<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>),
+                   right = <span class="kw">FALSE</span>)
+
+<span class="fn">table</span>(df$AgeGroup, df$sex)</pre></div>
+</div>
+
+<div class="callout">
+  <strong>Tip:</strong> Use local temp tables (<code>#temp</code>) rather than global ones (<code>##temp</code>). Global temp tables are visible to all sessions on the server, which can cause conflicts in a shared environment.
+</div>
+
+<h2>Prescribing</h2>
+
+<p>Prescribing data covers primary care dispensed prescriptions and is structured across two tables:</p>
+
+<ul>
+  <li><code>Prescribing_Scripts</code>: one row per prescription line, linked to patients via <code>PROCHI</code>. Each prescription is identified by <code>SCAN_REF_NO</code> and can have one or more lines (representing the number of drugs on that prescription). The column <code>hic_drugID</code> links to the drug details table.</li>
+  <li><code>Prescribing_Scripts_Prescribing_Item</code>: drug reference table, joined via <code>hic_drugID</code>. Contains the drug's approved name, BNF code (<code>formatted_BNF_Code</code> for the shortened chapter, e.g. 3.1.4, and <code>BNF_Code</code> for the full code), strength, and formulation (patch, cream, etc.).</li>
+</ul>
+
+
+<h3>Random sample joining both tables</h3>
+<p>To get a feel for the prescribing data, join Scripts to the Item lookup and sample 100 rows.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'rxsample-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxsample-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxsample-r')">R</button>
+  </div>
+  <div id="rxsample-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">100</span>
+       s.PROCHI,
+       s.PRESCRIBED_DATE,
+       s.SCAN_REF_NO,
+       s.line_no,
+       i.Approved_Name,
+       i.formatted_BNF_Code,
+       i.Strength,
+       i.Formulation_code
+<span class="kw">FROM</span> Project_12345..Prescribing_Scripts s
+<span class="kw">INNER JOIN</span> Project_12345..Prescribing_Scripts_Prescribing_Item i
+    <span class="kw">ON</span> s.hic_drugID = i.hic_drugID
+<span class="kw">ORDER BY</span> <span class="fn">NEWID</span>()</pre></div>
+  <div id="rxsample-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 100
+               s.PROCHI,
+               s.PRESCRIBED_DATE,
+               s.SCAN_REF_NO,
+               s.line_no,
+               i.Approved_Name,
+               i.formatted_BNF_Code,
+               i.Strength,
+               i.Formulation_code
+        FROM Project_12345..Prescribing_Scripts s
+        INNER JOIN Project_12345..Prescribing_Scripts_Prescribing_Item i
+            ON s.hic_drugID = i.hic_drugID
+        ORDER BY NEWID()
+    """</span>, conn)
+
+df.<span class="fn">head</span>()</pre></div>
+  <div id="rxsample-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 100
+           s.PROCHI,
+           s.PRESCRIBED_DATE,
+           s.SCAN_REF_NO,
+           s.line_no,
+           i.Approved_Name,
+           i.formatted_BNF_Code,
+           i.Strength,
+           i.Formulation_code
+    FROM Project_12345..Prescribing_Scripts s
+    INNER JOIN Project_12345..Prescribing_Scripts_Prescribing_Item i
+        ON s.hic_drugID = i.hic_drugID
+    ORDER BY NEWID()
+"</span>)
+
+<span class="fn">head</span>(df)</pre></div>
+</div>
+
+
+<h3>Prescription count by drug and age band</h3>
+<p>Link prescribing to demography to see which drugs are prescribed most frequently, broken down by patient age band. This counts <strong>prescription records</strong>, so a patient prescribed the same drug multiple times is counted each time.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'rxcount-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxcount-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxcount-r')">R</button>
+  </div>
+  <div id="rxcount-sql" class="code-panel active"><pre><span class="kw">SELECT</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
+        <span class="kw">ELSE</span> <span class="st">'80+'</span>
+    <span class="kw">END AS</span> AgeGroup,
+    i.Approved_Name,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> PrescriptionCount
+<span class="kw">FROM</span> Project_12345..Prescribing_Scripts s
+<span class="kw">INNER JOIN</span> Project_12345..Prescribing_Scripts_Prescribing_Item i
+    <span class="kw">ON</span> s.hic_drugID = i.hic_drugID
+<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
+    <span class="kw">ON</span> s.PROCHI = d.PROCHI
+<span class="kw">GROUP BY</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
+        <span class="kw">ELSE</span> <span class="st">'80+'</span>
+    <span class="kw">END</span>,
+    i.Approved_Name
+<span class="kw">ORDER BY</span> PrescriptionCount <span class="kw">DESC</span></pre></div>
+  <div id="rxcount-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    scripts = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT s.PROCHI, s.hic_drugID
+        FROM Project_12345..Prescribing_Scripts s
+    """</span>, conn)
+
+    items = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT hic_drugID, Approved_Name
+        FROM Project_12345..Prescribing_Scripts_Prescribing_Item
+    """</span>, conn)
+
+    demog = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT PROCHI, Calculated_Age
+        FROM Project_12345..Demography_Current
+    """</span>, conn)
+
+<span class="cm"># Merge the three tables</span>
+df = scripts.<span class="fn">merge</span>(items, on=<span class="st">"hic_drugID"</span>).<span class="fn">merge</span>(demog, on=<span class="st">"PROCHI"</span>)
+
+<span class="cm"># Create age bands in 10-year intervals</span>
+bins = [<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">200</span>]
+labels = [<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>]
+df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)
+
+<span class="cm"># Count prescription records per age group and drug</span>
+result = (df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"Approved_Name"</span>])
+            .<span class="fn">size</span>()
+            .<span class="fn">reset_index</span>(name=<span class="st">"PrescriptionCount"</span>)
+            .<span class="fn">sort_values</span>(<span class="st">"PrescriptionCount"</span>, ascending=<span class="kw">False</span>))
+result</pre></div>
+  <div id="rxcount-r" class="code-panel"><pre><span class="cm"># Load all three tables</span>
+scripts <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT PROCHI, hic_drugID
+    FROM Project_12345..Prescribing_Scripts
+"</span>)
+
+items <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT hic_drugID, Approved_Name
+    FROM Project_12345..Prescribing_Scripts_Prescribing_Item
+"</span>)
+
+demog <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT PROCHI, Calculated_Age
+    FROM Project_12345..Demography_Current
+"</span>)
+
+<span class="cm"># Merge and create age bands</span>
+df <span class="kw">&lt;-</span> <span class="fn">merge</span>(<span class="fn">merge</span>(scripts, items, by = <span class="st">"hic_drugID"</span>), demog, by = <span class="st">"PROCHI"</span>)
+
+df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,
+                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">60</span>, <span class="nb">70</span>, <span class="nb">80</span>, <span class="nb">Inf</span>),
+                   labels = <span class="fn">c</span>(<span class="st">"&lt;20"</span>, <span class="st">"20-29"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>,
+                              <span class="st">"50-59"</span>, <span class="st">"60-69"</span>, <span class="st">"70-79"</span>, <span class="st">"80+"</span>),
+                   right = <span class="kw">FALSE</span>)
+
+<span class="cm"># Count prescription records</span>
+result <span class="kw">&lt;-</span> <span class="fn">aggregate</span>(hic_drugID ~ AgeGroup + Approved_Name, data = df, FUN = length)
+<span class="fn">names</span>(result)[<span class="nb">3</span>] <span class="kw">&lt;-</span> <span class="st">"PrescriptionCount"</span>
+result <span class="kw">&lt;-</span> result[<span class="fn">order</span>(-result$PrescriptionCount), ]
+<span class="fn">head</span>(result, <span class="nb">20</span>)</pre></div>
+</div>
+<p class="explanation">This counts prescription <strong>records</strong>. A patient receiving the same drug 12 times contributes 12 to the count.</p>
+
+
+<h3>Patient count by drug and age band</h3>
+<p>Same structure, but counting <strong>distinct patients</strong> per drug and age band. This tells you how many people were prescribed each drug, regardless of how many times.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'rxpat-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxpat-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'rxpat-r')">R</button>
+  </div>
+  <div id="rxpat-sql" class="code-panel active"><pre><span class="kw">SELECT</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
+        <span class="kw">ELSE</span> <span class="st">'80+'</span>
+    <span class="kw">END AS</span> AgeGroup,
+    i.Approved_Name,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> s.PROCHI) <span class="kw">AS</span> PatientCount
+<span class="kw">FROM</span> Project_12345..Prescribing_Scripts s
+<span class="kw">INNER JOIN</span> Project_12345..Prescribing_Scripts_Prescribing_Item i
+    <span class="kw">ON</span> s.hic_drugID = i.hic_drugID
+<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
+    <span class="kw">ON</span> s.PROCHI = d.PROCHI
+<span class="kw">GROUP BY</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> d.Calculated_Age &lt; <span class="nb">20</span>                  <span class="kw">THEN</span> <span class="st">'&lt;20'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">20</span> <span class="kw">AND</span> <span class="nb">29</span>   <span class="kw">THEN</span> <span class="st">'20-29'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>   <span class="kw">THEN</span> <span class="st">'30-39'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>   <span class="kw">THEN</span> <span class="st">'40-49'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">50</span> <span class="kw">AND</span> <span class="nb">59</span>   <span class="kw">THEN</span> <span class="st">'50-59'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">60</span> <span class="kw">AND</span> <span class="nb">69</span>   <span class="kw">THEN</span> <span class="st">'60-69'</span>
+        <span class="kw">WHEN</span> d.Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">70</span> <span class="kw">AND</span> <span class="nb">79</span>   <span class="kw">THEN</span> <span class="st">'70-79'</span>
+        <span class="kw">ELSE</span> <span class="st">'80+'</span>
+    <span class="kw">END</span>,
+    i.Approved_Name
+<span class="kw">ORDER BY</span> PatientCount <span class="kw">DESC</span></pre></div>
+  <div id="rxpat-py" class="code-panel"><pre><span class="cm"># Reusing df from the previous example</span>
+result = (df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"Approved_Name"</span>])[<span class="st">"PROCHI"</span>]
+            .<span class="fn">nunique</span>()
+            .<span class="fn">reset_index</span>(name=<span class="st">"PatientCount"</span>)
+            .<span class="fn">sort_values</span>(<span class="st">"PatientCount"</span>, ascending=<span class="kw">False</span>))
+result</pre></div>
+  <div id="rxpat-r" class="code-panel"><pre><span class="cm"># Reusing df from the previous example</span>
+result <span class="kw">&lt;-</span> <span class="fn">aggregate</span>(
+    PROCHI ~ AgeGroup + Approved_Name,
+    data = df,
+    FUN = <span class="kw">function</span>(x) <span class="fn">length</span>(<span class="fn">unique</span>(x))
+)
+<span class="fn">names</span>(result)[<span class="nb">3</span>] <span class="kw">&lt;-</span> <span class="st">"PatientCount"</span>
+result <span class="kw">&lt;-</span> result[<span class="fn">order</span>(-result$PatientCount), ]
+<span class="fn">head</span>(result, <span class="nb">20</span>)</pre></div>
+</div>
+<p class="explanation">The only change from the previous query is <code>COUNT(DISTINCT PROCHI)</code> instead of <code>COUNT(*)</code>. This gives the number of unique individuals prescribed each drug per age band.</p>
+
+
+<h2>Labs</h2>
+
+<p>There are five laboratory datasets: Haematology, Immunology, Biochemistry, Virology and Microbiology. For the first four, the raw data is sent to HIC in three parts (Header, Results and Sample Details). For your convenience, these tables are joined together and provided to you as a single "Restructured" table per lab type.</p>
+
+<div class="callout">
+  <strong>Naming conventions:</strong> Although the restructured tables are produced in the same way, their names are not entirely consistent across lab types:
+  <code>HaematologyRestructured</code>,
+  <code>ImmunologyRestructured</code>,
+  <code>VirologyRestructured</code>,
+  and <code>Labs_Biochem</code>.
+  The structure and columns are the same in each case.
+</div>
+
+<p>Microbiology is provided differently, as three separate tables: <code>MicroBio_Isolat</code>, <code>MicroBio_Lab</code> and <code>MicroBio_Tests</code>. A detailed description of the Microbiology schema is out of scope for this page.</p>
+
+<p>The examples below use <code>HaematologyRestructured</code>, but the same queries apply to any of the restructured lab tables.</p>
+
+
+<h3>Random sample of lab results with demographics</h3>
+<p>Join the lab table to Demography to see patient context alongside results.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'labsample-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'labsample-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'labsample-r')">R</button>
+  </div>
+  <div id="labsample-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">100</span>
+       h.PROCHI,
+       d.sex,
+       d.Calculated_Age,
+       h.DateTimeSampled,
+       h.LocalClinicalCodeDescription,
+       h.QuantityValue,
+       h.QuantityUnit,
+       h.RangeLowValue,
+       h.RangeHighValue,
+       h.Interpretation
+<span class="kw">FROM</span> Project_12345..HaematologyRestructured h
+<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
+    <span class="kw">ON</span> h.PROCHI = d.PROCHI
+<span class="kw">ORDER BY</span> <span class="fn">NEWID</span>()</pre></div>
+  <div id="labsample-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 100
+               h.PROCHI,
+               d.sex,
+               d.Calculated_Age,
+               h.DateTimeSampled,
+               h.LocalClinicalCodeDescription,
+               h.QuantityValue,
+               h.QuantityUnit,
+               h.RangeLowValue,
+               h.RangeHighValue,
+               h.Interpretation
+        FROM Project_12345..HaematologyRestructured h
+        INNER JOIN Project_12345..Demography_Current d
+            ON h.PROCHI = d.PROCHI
+        ORDER BY NEWID()
+    """</span>, conn)
+
+df.<span class="fn">head</span>()</pre></div>
+  <div id="labsample-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 100
+           h.PROCHI,
+           d.sex,
+           d.Calculated_Age,
+           h.DateTimeSampled,
+           h.LocalClinicalCodeDescription,
+           h.QuantityValue,
+           h.QuantityUnit,
+           h.RangeLowValue,
+           h.RangeHighValue,
+           h.Interpretation
+    FROM Project_12345..HaematologyRestructured h
+    INNER JOIN Project_12345..Demography_Current d
+        ON h.PROCHI = d.PROCHI
+    ORDER BY NEWID()
+"</span>)
+
+<span class="fn">head</span>(df)</pre></div>
+</div>
+
+
+<h3>Patients with and without lab results</h3>
+<p>Not every patient in your cohort will have lab results. Use a <code>LEFT JOIN</code> to identify which patients have haematology records and which do not.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'labcov-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'labcov-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'labcov-r')">R</button>
+  </div>
+  <div id="labcov-sql" class="code-panel active"><pre><span class="cm">-- Patients WITH at least one haematology result</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> d.PROCHI) <span class="kw">AS</span> WithLabs
+<span class="kw">FROM</span> Project_12345..Demography_Current d
+<span class="kw">INNER JOIN</span> Project_12345..HaematologyRestructured h
+    <span class="kw">ON</span> d.PROCHI = h.PROCHI
+
+<span class="cm">-- Patients WITHOUT any haematology result</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> d.PROCHI) <span class="kw">AS</span> WithoutLabs
+<span class="kw">FROM</span> Project_12345..Demography_Current d
+<span class="kw">LEFT JOIN</span> Project_12345..HaematologyRestructured h
+    <span class="kw">ON</span> d.PROCHI = h.PROCHI
+<span class="kw">WHERE</span> h.PROCHI <span class="kw">IS NULL</span>
+
+<span class="cm">-- Combined summary in a single query</span>
+<span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> d.PROCHI) <span class="kw">AS</span> TotalCohort,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> h.PROCHI) <span class="kw">AS</span> WithLabs,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> d.PROCHI) - <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> h.PROCHI) <span class="kw">AS</span> WithoutLabs
+<span class="kw">FROM</span> Project_12345..Demography_Current d
+<span class="kw">LEFT JOIN</span> Project_12345..HaematologyRestructured h
+    <span class="kw">ON</span> d.PROCHI = h.PROCHI</pre></div>
+  <div id="labcov-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    demog = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT DISTINCT PROCHI
+        FROM Project_12345..Demography_Current
+    """</span>, conn)
+
+    lab_prochis = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT DISTINCT PROCHI
+        FROM Project_12345..HaematologyRestructured
+    """</span>, conn)
+
+<span class="cm"># Patients with and without lab results</span>
+has_labs = demog[<span class="st">"PROCHI"</span>].<span class="fn">isin</span>(lab_prochis[<span class="st">"PROCHI"</span>])
+
+<span class="fn">print</span>(<span class="st">f"Total cohort:  </span>{<span class="fn">len</span>(demog)}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"With labs:     </span>{has_labs.<span class="fn">sum</span>()}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"Without labs:  </span>{(~has_labs).<span class="fn">sum</span>()}<span class="st">"</span>)</pre></div>
+  <div id="labcov-r" class="code-panel"><pre>demog <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT DISTINCT PROCHI
+    FROM Project_12345..Demography_Current
+"</span>)
+
+lab_prochis <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT DISTINCT PROCHI
+    FROM Project_12345..HaematologyRestructured
+"</span>)
+
+has_labs <span class="kw">&lt;-</span> demog$PROCHI %in% lab_prochis$PROCHI
+
+<span class="fn">cat</span>(<span class="st">"Total cohort:"</span>, <span class="fn">nrow</span>(demog), <span class="st">"\n"</span>)
+<span class="fn">cat</span>(<span class="st">"With labs:   "</span>, <span class="fn">sum</span>(has_labs), <span class="st">"\n"</span>)
+<span class="fn">cat</span>(<span class="st">"Without labs:"</span>, <span class="fn">sum</span>(!has_labs), <span class="st">"\n"</span>)</pre></div>
+</div>
+<p class="explanation">The <code>LEFT JOIN ... WHERE h.PROCHI IS NULL</code> pattern is a standard way to find rows in one table that have no match in another. The combined query at the bottom gives you all three numbers in one go.</p>
+
+
+<h2>Scottish Morbidity Records (SMR)</h2>
+
+<p>SMR is a comprehensive, national series of patient-level datasets that track patient activity across NHS Scotland hospitals. Collected since the 1960s, they cover inpatient, day case and outpatient care, providing detailed, linkable information on diagnoses, procedures and patient demographics, with over 98% completeness for key metrics such as births. They are widely used for health planning, research and monitoring.</p>
+
+<p>The main SMR datasets are:</p>
+<ul>
+  <li><code>SMR00</code> (Outpatient Attendance): the largest SMR dataset. It primarily tracks patient engagement with NHS outpatient services, with partial coverage of referral reasons coded in ICD-10 (note: these are referral reasons, not confirmed diagnoses). If the patient undergoes a procedure, it is recorded using OPCS-4 codes.</li>
+  <li><code>SMR01</code> (General/Acute Inpatient and Day Case): the most important dataset for searching by diagnosis. Conditions are coded using ICD-10 in the <code>MAIN_CONDITION</code> and <code>OTHER_CONDITION</code> columns, and procedures use OPCS-4 codes.</li>
+  <li><code>SMR02</code> (Maternity): a subset of inpatient activity covering maternity admissions, with additional fields specific to maternal and neonatal care.</li>
+  <li><code>SMR04</code> (Mental Health): covers psychiatric inpatient admissions, with ICD-10 coded diagnoses and additional mental health specific fields.</li>
+  <li><code>SMR06</code> (Cancer): the Scottish Cancer Registry, a subset of inpatient records with detailed tumour staging and morphology data, linked to other SMR records where applicable.</li>
+</ul>
+
+<p>SMR02, SMR04 and SMR06 are broadly similar in structure to SMR01, but may contain additional columns specific to their domain and may cover locations other than acute hospitals. Your project database will contain whichever SMR datasets were approved for your study.</p>
+
+<p>The examples below use <code>SMR01_Admissions</code>. Key columns include <code>MAIN_CONDITION</code> (ICD-10 primary diagnosis), <code>ADMISSION_DATE</code>, <code>DISCHARGE_DATE</code>, <code>LENGTH_OF_STAY</code>, and <code>MAIN_OPERATION</code> (OPCS-4 procedure code).</p>
+
+
+<h3>Random sample with demographics</h3>
+<p>Join SMR01 to Demography for a quick look at admissions alongside patient context.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'smrsample-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrsample-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrsample-r')">R</button>
+  </div>
+  <div id="smrsample-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">100</span>
+       s.PROCHI,
+       d.sex,
+       d.Calculated_Age,
+       s.ADMISSION_DATE,
+       s.DISCHARGE_DATE,
+       s.LENGTH_OF_STAY,
+       s.MAIN_CONDITION,
+       s.MAIN_OPERATION
+<span class="kw">FROM</span> Project_12345..SMR01_Admissions s
+<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
+    <span class="kw">ON</span> s.PROCHI = d.PROCHI
+<span class="kw">ORDER BY</span> <span class="fn">NEWID</span>()</pre></div>
+  <div id="smrsample-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 100
+               s.PROCHI,
+               d.sex,
+               d.Calculated_Age,
+               s.ADMISSION_DATE,
+               s.DISCHARGE_DATE,
+               s.LENGTH_OF_STAY,
+               s.MAIN_CONDITION,
+               s.MAIN_OPERATION
+        FROM Project_12345..SMR01_Admissions s
+        INNER JOIN Project_12345..Demography_Current d
+            ON s.PROCHI = d.PROCHI
+        ORDER BY NEWID()
+    """</span>, conn)
+
+df.<span class="fn">head</span>()</pre></div>
+  <div id="smrsample-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 100
+           s.PROCHI,
+           d.sex,
+           d.Calculated_Age,
+           s.ADMISSION_DATE,
+           s.DISCHARGE_DATE,
+           s.LENGTH_OF_STAY,
+           s.MAIN_CONDITION,
+           s.MAIN_OPERATION
+    FROM Project_12345..SMR01_Admissions s
+    INNER JOIN Project_12345..Demography_Current d
+        ON s.PROCHI = d.PROCHI
+    ORDER BY NEWID()
+"</span>)
+
+<span class="fn">head</span>(df)</pre></div>
+</div>
+
+
+<h3>Most frequent conditions recorded</h3>
+<p>Count admissions by <code>MAIN_CONDITION</code> (ICD-10 code) to see which diagnoses are most common in your cohort.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'smrcond-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrcond-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrcond-r')">R</button>
+  </div>
+  <div id="smrcond-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">20</span>
+       MAIN_CONDITION,
+       <span class="fn">COUNT</span>(*) <span class="kw">AS</span> AdmissionCount
+<span class="kw">FROM</span> Project_12345..SMR01_Admissions
+<span class="kw">GROUP BY</span> MAIN_CONDITION
+<span class="kw">ORDER BY</span> AdmissionCount <span class="kw">DESC</span></pre></div>
+  <div id="smrcond-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 20
+               MAIN_CONDITION,
+               COUNT(*) AS AdmissionCount
+        FROM Project_12345..SMR01_Admissions
+        GROUP BY MAIN_CONDITION
+        ORDER BY AdmissionCount DESC
+    """</span>, conn)
+
+df</pre></div>
+  <div id="smrcond-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 20
+           MAIN_CONDITION,
+           COUNT(*) AS AdmissionCount
+    FROM Project_12345..SMR01_Admissions
+    GROUP BY MAIN_CONDITION
+    ORDER BY AdmissionCount DESC
+"</span>)
+
+df</pre></div>
+</div>
+<p class="explanation">The <code>MAIN_CONDITION</code> column contains ICD-10 codes. You can cross-reference these with the <code>G_World_Health_Organisation_ICD10_Codes</code> lookup table if you need human-readable descriptions.</p>
+
+
+<h3>Top patients by total hospitalisations</h3>
+<p>Identify the patients with the most admission episodes.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'smrtop-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrtop-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'smrtop-r')">R</button>
+  </div>
+  <div id="smrtop-sql" class="code-panel active"><pre><span class="kw">SELECT TOP</span> <span class="nb">20</span>
+       s.PROCHI,
+       d.sex,
+       d.Calculated_Age,
+       <span class="fn">COUNT</span>(*) <span class="kw">AS</span> TotalAdmissions,
+       <span class="fn">SUM</span>(s.LENGTH_OF_STAY) <span class="kw">AS</span> TotalDays
+<span class="kw">FROM</span> Project_12345..SMR01_Admissions s
+<span class="kw">INNER JOIN</span> Project_12345..Demography_Current d
+    <span class="kw">ON</span> s.PROCHI = d.PROCHI
+<span class="kw">GROUP BY</span> s.PROCHI, d.sex, d.Calculated_Age
+<span class="kw">ORDER BY</span> TotalAdmissions <span class="kw">DESC</span></pre></div>
+  <div id="smrtop-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT TOP 20
+               s.PROCHI,
+               d.sex,
+               d.Calculated_Age,
+               COUNT(*) AS TotalAdmissions,
+               SUM(s.LENGTH_OF_STAY) AS TotalDays
+        FROM Project_12345..SMR01_Admissions s
+        INNER JOIN Project_12345..Demography_Current d
+            ON s.PROCHI = d.PROCHI
+        GROUP BY s.PROCHI, d.sex, d.Calculated_Age
+        ORDER BY TotalAdmissions DESC
+    """</span>, conn)
+
+df</pre></div>
+  <div id="smrtop-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT TOP 20
+           s.PROCHI,
+           d.sex,
+           d.Calculated_Age,
+           COUNT(*) AS TotalAdmissions,
+           SUM(s.LENGTH_OF_STAY) AS TotalDays
+    FROM Project_12345..SMR01_Admissions s
+    INNER JOIN Project_12345..Demography_Current d
+        ON s.PROCHI = d.PROCHI
+    GROUP BY s.PROCHI, d.sex, d.Calculated_Age
+    ORDER BY TotalAdmissions DESC
+"</span>)
+
+df</pre></div>
+</div>
+<p class="explanation">This also sums <code>LENGTH_OF_STAY</code> to show total days spent in hospital alongside the admission count.</p>
+
+
+<h2>Checking Your Environment</h2>
+
+<p>If you need to check the software versions available in your workspace, the following snippets will display the relevant information. This page was written and tested against the versions shown in the output below.</p>
+
+<div class="code-block">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'env-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'env-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'env-r')">R</button>
+  </div>
+  <div id="env-sql" class="code-panel active"><pre><span class="kw">SELECT</span> @@VERSION</pre>
+<span class="cm">-- Microsoft SQL Server 2022 (RTM-CU24) (KB5080999)
+-- 16.0.4245.2 (X64)   Feb 25 2026 15:01:38
+-- Copyright (C) 2022 Microsoft Corporation
+-- Standard Edition (64-bit) on Windows Server 2019
+-- Standard 10.0 &lt;X64&gt; (Build 17763: ) (Hypervisor)</span></div>
+  <div id="env-py" class="code-panel"><pre><span class="kw">import</span> sys
+<span class="kw">import</span> IPython
+<span class="kw">import</span> matplotlib
+<span class="kw">import</span> pandas
+<span class="kw">import</span> pyodbc
+<span class="kw">import</span> sqlalchemy
+
+<span class="fn">print</span>(<span class="st">f"Python     : </span>{sys.version}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"IPython    : </span>{IPython.__version__}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"matplotlib : </span>{matplotlib.__version__}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"pandas     : </span>{pandas.__version__}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"pyodbc     : </span>{pyodbc.version}<span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"sqlalchemy : </span>{sqlalchemy.__version__}<span class="st">"</span>)
+
+<span class="cm"># Python version       : 3.14.3
+# IPython version      : 9.12.0
+# matplotlib           : 3.10.8
+# pandas               : 3.0.2
+# pyodbc               : 5.3.0
+# sqlalchemy           : 2.0.48</span></pre></div>
+  <div id="env-r" class="code-panel"><pre><span class="fn">sessionInfo</span>()
+
+<span class="cm"># R version 4.4.3 (2025-02-28 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 26100)
+#
+# attached base packages:
+# stats  graphics  grDevices  utils  datasets  methods  base
+#
+# other attached packages:
+# glue_1.8.0  odbc_1.6.4.1  DBI_1.3.0</span></pre></div>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  const block = btn.closest('.code-block');
+  block.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+</script>
+</body>
+</html>
