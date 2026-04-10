@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snippet 004</title>
+<style>/* omitted */
+:root {--bg:#0f1220;--surface:#11152a;--border:#313244;--text:#cdd6f4;--muted:#94a3b8;--active:#cba6f7;--tab-bg:#181825;--btn-bg:#1f2937;--btn-hover:#334155}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,monospace;color:var(--text)}
+.snippet{margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.code-tabs{display:flex;gap:2px;align-items:center;background:var(--tab-bg);border-bottom:1px solid var(--border);padding-right:.5rem}
+.code-tab{font-size:12px;padding:.55rem .9rem;border:none;background:transparent;color:var(--muted);cursor:pointer}.code-tab.active{color:var(--text);border-bottom:2px solid var(--active)}
+.copy-btn{margin-left:auto;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);font-size:12px;padding:.3rem .55rem;border-radius:4px;cursor:pointer}.copy-btn:hover{background:var(--btn-hover)}
+.code-panel{display:none;padding:.85rem .9rem;overflow:auto}.code-panel.active{display:block}
+pre{margin:0;line-height:1.5;font-size:12px;white-space:pre;counter-reset:line}.line{display:block;padding-left:3.3em;position:relative}
+.line::before{counter-increment:line;content:counter(line);position:absolute;left:0;width:2.5em;text-align:right;color:#6c7086;padding-right:.8em;border-right:1px solid #313244}
+.cm{color:#6c7086}.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nb{color:#fab387}
+</style>
+</head>
+<body>
+<div class="snippet">
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="switchTab(this, 'band-sql')">SQL</button>
+    <button class="code-tab" onclick="switchTab(this, 'band-py')">Python</button>
+    <button class="code-tab" onclick="switchTab(this, 'band-r')">R</button>
+  <button class="copy-btn" onclick="copyActive(this)">Copy</button></div>
+  <div id="band-sql" class="code-panel active"><pre><span class="cm">-- Step 1: Build the grouped counts into a temp table</span>
+<span class="kw">SELECT</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END AS</span> AgeGroup,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount
+<span class="kw">INTO</span> #temp
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">GROUP BY</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END</span>
+
+<span class="cm">-- Step 2: Pivot to wide format</span>
+<span class="kw">SELECT</span> AgeGroup,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'M'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Male,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'F'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Female
+<span class="kw">FROM</span> #temp
+<span class="kw">GROUP BY</span> AgeGroup
+
+<span class="cm">-- Clean up</span>
+<span class="kw">DROP TABLE</span> #temp</pre></div>
+  <div id="band-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT sex, Calculated_Age, PROCHI
+        FROM Project_12345..Demography_Current
+    """</span>, conn)
+
+bins = [<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">200</span>]
+labels = [<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>]
+df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)
+
+pivot = df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"sex"</span>])[<span class="st">"PROCHI"</span>].<span class="fn">nunique</span>().<span class="fn">unstack</span>(fill_value=<span class="nb">0</span>)
+pivot.<span class="fn">rename</span>(columns={<span class="st">"M"</span>: <span class="st">"Male"</span>, <span class="st">"F"</span>: <span class="st">"Female"</span>})</pre></div>
+  <div id="band-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT sex, Calculated_Age, PROCHI
+    FROM Project_12345..Demography_Current
+"</span>)
+
+df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,
+                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">Inf</span>),
+                   labels = <span class="fn">c</span>(<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>),
+                   right = <span class="kw">FALSE</span>)
+
+<span class="fn">table</span>(df$AgeGroup, df$sex)</pre></div>
+</div>
+<script>
+function switchTab(button,panelId){const block=button.closest('.snippet');block.querySelectorAll('.code-tab').forEach(t=>t.classList.remove('active'));button.classList.add('active');block.querySelectorAll('.code-panel').forEach(p=>p.classList.remove('active'));block.querySelector('#'+panelId).classList.add('active');}
+function addLineNumbers(){document.querySelectorAll('pre').forEach(pre=>{const html=pre.innerHTML.replace(/\n$/,'');const lines=html.split('\n');pre.innerHTML=lines.map(line=>`<span class="line">${line||' '}</span>`).join('');});}
+async function copyActive(btn){const block=btn.closest('.snippet');const activePre=block.querySelector('.code-panel.active pre');const text=activePre?activePre.innerText:'';try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=old,1200);}catch(e){btn.textContent='Copy failed';setTimeout(()=>btn.textContent='Copy',1200);}}
+document.addEventListener('DOMContentLoaded',addLineNumbers);
+</script>
+</body>
+</html>
