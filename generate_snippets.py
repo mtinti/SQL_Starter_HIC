@@ -53,9 +53,9 @@ body{margin:0;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo
 .code-panel{display:none;padding:0.85rem 0.9rem;overflow:auto}
 .code-panel.active{display:block}
 pre{margin:0;line-height:1.5;font-size:12px;white-space:pre}
-.line{display:block;padding-left:3.3em;position:relative}
-.line::before{counter-increment:line;content:counter(line);position:absolute;left:0;width:2.5em;text-align:right;color:#6c7086;padding-right:0.8em;border-right:1px solid #313244}
-pre{counter-reset:line}
+.line{display:grid;grid-template-columns:2.5em 1fr;column-gap:0.8em}
+.line-no{color:#6c7086;text-align:right;border-right:1px solid #313244;padding-right:0.8em;user-select:none}
+.line-content{white-space:pre}
 .cm{color:#6c7086}.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nb{color:#fab387}
 </style>'''
 
@@ -71,7 +71,9 @@ function addLineNumbers() {
   document.querySelectorAll('pre').forEach(pre => {
     const html = pre.innerHTML.replace(/\n$/, '');
     const lines = html.split('\n');
-    pre.innerHTML = lines.map(line => `<span class="line">${line || ' '}</span>`).join('');
+    pre.innerHTML = lines.map((line, idx) => (
+      `<span class="line"><span class="line-no">${idx + 1}</span><span class="line-content">${line || ' '}</span></span>`
+    )).join('');
   });
 }
 async function copyActive(btn) {
