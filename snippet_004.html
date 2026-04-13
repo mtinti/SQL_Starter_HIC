@@ -13,23 +13,16 @@
   --muted: #94a3b8;
   --active: #cba6f7;
   --tab-bg: #181825;
-  --btn-bg: #1f2937;
-  --btn-hover: #334155;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,monospace;color:var(--text)}
 .snippet{margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
-.code-tabs{display:flex;gap:2px;align-items:center;background:var(--tab-bg);border-bottom:1px solid var(--border);padding-right:0.5rem}
+.code-tabs{display:flex;gap:2px;background:var(--tab-bg);border-bottom:1px solid var(--border)}
 .code-tab{font-size:12px;padding:0.55rem 0.9rem;border:none;background:transparent;color:var(--muted);cursor:pointer}
 .code-tab.active{color:var(--text);border-bottom:2px solid var(--active)}
-.copy-btn{margin-left:auto;background:var(--btn-bg);color:var(--text);border:1px solid var(--border);font-size:12px;padding:0.3rem 0.55rem;border-radius:4px;cursor:pointer}
-.copy-btn:hover{background:var(--btn-hover)}
-.code-panel{display:none;overflow:auto}
+.code-panel{display:none}
 .code-panel.active{display:block}
-pre{margin:0;padding:0.85rem 0;line-height:1.5;font-size:12px;white-space:pre;min-width:max-content}
-.line{display:flex;align-items:flex-start}
-.line-no{position:sticky;left:0;flex:0 0 auto;width:2.5em;padding:0 0.8em 0 0.9rem;text-align:right;color:#6c7086;border-right:1px solid #313244;user-select:none;background:var(--surface);z-index:1}
-.line-content{flex:0 0 auto;padding:0 0.9rem 0 0.8em;white-space:pre}
+pre{margin:0;padding:0.85rem 0.9rem;overflow:auto;line-height:1.5;font-size:12px;white-space:pre}
 .cm{color:#6c7086}.kw{color:#cba6f7}.fn{color:#89b4fa}.st{color:#a6e3a1}.nb{color:#fab387}
 </style>
 </head>
@@ -39,10 +32,58 @@ pre{margin:0;padding:0.85rem 0;line-height:1.5;font-size:12px;white-space:pre;mi
     <button class="code-tab active" onclick="switchTab(this, 'band-sql')">SQL</button>
     <button class="code-tab" onclick="switchTab(this, 'band-py')">Python</button>
     <button class="code-tab" onclick="switchTab(this, 'band-r')">R</button>
-  <button class="copy-btn" onclick="copyActive(this)">Copy</button></div>
-  <div id="band-sql" class="code-panel active"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="cm">-- Step 1: Build the grouped counts into a temp table</span></span></span><span class="line"><span class="line-no">2</span><span class="line-content"><span class="kw">SELECT</span> sex,</span></span><span class="line"><span class="line-no">3</span><span class="line-content">       <span class="kw">CASE</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span></span></span><span class="line"><span class="line-no">6</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span></span></span><span class="line"><span class="line-no">7</span><span class="line-content">           <span class="kw">ELSE</span> <span class="st">'50+'</span></span></span><span class="line"><span class="line-no">8</span><span class="line-content">       <span class="kw">END AS</span> AgeGroup,</span></span><span class="line"><span class="line-no">9</span><span class="line-content">       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount</span></span><span class="line"><span class="line-no">10</span><span class="line-content"><span class="kw">INTO</span> #temp</span></span><span class="line"><span class="line-no">11</span><span class="line-content"><span class="kw">FROM</span> Project_12345..Demography_Current</span></span><span class="line"><span class="line-no">12</span><span class="line-content"><span class="kw">GROUP BY</span> sex,</span></span><span class="line"><span class="line-no">13</span><span class="line-content">       <span class="kw">CASE</span></span></span><span class="line"><span class="line-no">14</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span></span></span><span class="line"><span class="line-no">15</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span></span></span><span class="line"><span class="line-no">16</span><span class="line-content">           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span></span></span><span class="line"><span class="line-no">17</span><span class="line-content">           <span class="kw">ELSE</span> <span class="st">'50+'</span></span></span><span class="line"><span class="line-no">18</span><span class="line-content">       <span class="kw">END</span></span></span><span class="line"><span class="line-no">19</span><span class="line-content"> </span></span><span class="line"><span class="line-no">20</span><span class="line-content"><span class="cm">-- Step 2: Pivot to wide format</span></span></span><span class="line"><span class="line-no">21</span><span class="line-content"><span class="kw">SELECT</span> AgeGroup,</span></span><span class="line"><span class="line-no">22</span><span class="line-content">       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'M'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Male,</span></span><span class="line"><span class="line-no">23</span><span class="line-content">       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'F'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Female</span></span><span class="line"><span class="line-no">24</span><span class="line-content"><span class="kw">FROM</span> #temp</span></span><span class="line"><span class="line-no">25</span><span class="line-content"><span class="kw">GROUP BY</span> AgeGroup</span></span><span class="line"><span class="line-no">26</span><span class="line-content"> </span></span><span class="line"><span class="line-no">27</span><span class="line-content"><span class="cm">-- Clean up</span></span></span><span class="line"><span class="line-no">28</span><span class="line-content"><span class="kw">DROP TABLE</span> #temp</span></span></pre></div>
-  <div id="band-py" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content"><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:</span></span><span class="line"><span class="line-no">2</span><span class="line-content">    df = pd.<span class="fn">read_sql</span>(<span class="st">"""</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">        SELECT sex, Calculated_Age, PROCHI</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">        FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">5</span><span class="line-content"><span class="st">    """</span>, conn)</span></span><span class="line"><span class="line-no">6</span><span class="line-content"> </span></span><span class="line"><span class="line-no">7</span><span class="line-content">bins = [<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">200</span>]</span></span><span class="line"><span class="line-no">8</span><span class="line-content">labels = [<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>]</span></span><span class="line"><span class="line-no">9</span><span class="line-content">df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)</span></span><span class="line"><span class="line-no">10</span><span class="line-content"> </span></span><span class="line"><span class="line-no">11</span><span class="line-content">pivot = df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"sex"</span>])[<span class="st">"PROCHI"</span>].<span class="fn">nunique</span>().<span class="fn">unstack</span>(fill_value=<span class="nb">0</span>)</span></span><span class="line"><span class="line-no">12</span><span class="line-content">pivot.<span class="fn">rename</span>(columns={<span class="st">"M"</span>: <span class="st">"Male"</span>, <span class="st">"F"</span>: <span class="st">"Female"</span>})</span></span></pre></div>
-  <div id="band-r" class="code-panel"><pre><span class="line"><span class="line-no">1</span><span class="line-content">df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"</span></span></span><span class="line"><span class="line-no">2</span><span class="line-content"><span class="st">    SELECT sex, Calculated_Age, PROCHI</span></span></span><span class="line"><span class="line-no">3</span><span class="line-content"><span class="st">    FROM Project_12345..Demography_Current</span></span></span><span class="line"><span class="line-no">4</span><span class="line-content"><span class="st">"</span>)</span></span><span class="line"><span class="line-no">5</span><span class="line-content"> </span></span><span class="line"><span class="line-no">6</span><span class="line-content">df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,</span></span><span class="line"><span class="line-no">7</span><span class="line-content">                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">Inf</span>),</span></span><span class="line"><span class="line-no">8</span><span class="line-content">                   labels = <span class="fn">c</span>(<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>),</span></span><span class="line"><span class="line-no">9</span><span class="line-content">                   right = <span class="kw">FALSE</span>)</span></span><span class="line"><span class="line-no">10</span><span class="line-content"> </span></span><span class="line"><span class="line-no">11</span><span class="line-content"><span class="fn">table</span>(df$AgeGroup, df$sex)</span></span></pre></div>
+  </div>
+  <div id="band-sql" class="code-panel active"><pre><span class="cm">-- Step 1: Build the grouped counts into a temp table</span>
+<span class="kw">SELECT</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END AS</span> AgeGroup,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> PROCHI) <span class="kw">AS</span> PatientCount
+<span class="kw">INTO</span> #temp
+<span class="kw">FROM</span> Project_12345..Demography_Current
+<span class="kw">GROUP BY</span> sex,
+       <span class="kw">CASE</span>
+           <span class="kw">WHEN</span> Calculated_Age &lt; <span class="nb">30</span>                      <span class="kw">THEN</span> <span class="st">'&lt;30'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">30</span> <span class="kw">AND</span> <span class="nb">39</span>       <span class="kw">THEN</span> <span class="st">'30-39'</span>
+           <span class="kw">WHEN</span> Calculated_Age <span class="kw">BETWEEN</span> <span class="nb">40</span> <span class="kw">AND</span> <span class="nb">49</span>       <span class="kw">THEN</span> <span class="st">'40-49'</span>
+           <span class="kw">ELSE</span> <span class="st">'50+'</span>
+       <span class="kw">END</span>
+
+<span class="cm">-- Step 2: Pivot to wide format</span>
+<span class="kw">SELECT</span> AgeGroup,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'M'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Male,
+       <span class="fn">SUM</span>(<span class="fn">IIF</span>(sex = <span class="st">'F'</span>, PatientCount, <span class="nb">0</span>)) <span class="kw">AS</span> Female
+<span class="kw">FROM</span> #temp
+<span class="kw">GROUP BY</span> AgeGroup
+
+<span class="cm">-- Clean up</span>
+<span class="kw">DROP TABLE</span> #temp</pre></div>
+  <div id="band-py" class="code-panel"><pre><span class="kw">with</span> engine.<span class="fn">connect</span>() <span class="kw">as</span> conn:
+    df = pd.<span class="fn">read_sql</span>(<span class="st">"""
+        SELECT sex, Calculated_Age, PROCHI
+        FROM Project_12345..Demography_Current
+    """</span>, conn)
+
+bins = [<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">200</span>]
+labels = [<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>]
+df[<span class="st">"AgeGroup"</span>] = pd.<span class="fn">cut</span>(df[<span class="st">"Calculated_Age"</span>], bins=bins, labels=labels, right=<span class="kw">False</span>)
+
+pivot = df.<span class="fn">groupby</span>([<span class="st">"AgeGroup"</span>, <span class="st">"sex"</span>])[<span class="st">"PROCHI"</span>].<span class="fn">nunique</span>().<span class="fn">unstack</span>(fill_value=<span class="nb">0</span>)
+pivot.<span class="fn">rename</span>(columns={<span class="st">"M"</span>: <span class="st">"Male"</span>, <span class="st">"F"</span>: <span class="st">"Female"</span>})</pre></div>
+  <div id="band-r" class="code-panel"><pre>df <span class="kw">&lt;-</span> <span class="fn">dbGetQuery</span>(conn, <span class="st">"
+    SELECT sex, Calculated_Age, PROCHI
+    FROM Project_12345..Demography_Current
+"</span>)
+
+df$AgeGroup <span class="kw">&lt;-</span> <span class="fn">cut</span>(df$Calculated_Age,
+                   breaks = <span class="fn">c</span>(<span class="nb">0</span>, <span class="nb">30</span>, <span class="nb">40</span>, <span class="nb">50</span>, <span class="nb">Inf</span>),
+                   labels = <span class="fn">c</span>(<span class="st">"&lt;30"</span>, <span class="st">"30-39"</span>, <span class="st">"40-49"</span>, <span class="st">"50+"</span>),
+                   right = <span class="kw">FALSE</span>)
+
+<span class="fn">table</span>(df$AgeGroup, df$sex)</pre></div>
 </div>
 <script>
 function switchTab(button, panelId) {
@@ -52,29 +93,6 @@ function switchTab(button, panelId) {
   block.querySelectorAll('.code-panel').forEach(function (p) { p.classList.remove('active'); });
   var panel = block.querySelector('#' + panelId);
   if (panel) panel.classList.add('active');
-}
-async function copyActive(btn) {
-  var block = btn.closest('.snippet');
-  var activePanel = block.querySelector('.code-panel.active');
-  var text = '';
-  if (activePanel) {
-    var contents = activePanel.querySelectorAll('.line-content');
-    if (contents.length) {
-      text = Array.prototype.map.call(contents, function (n) { return n.innerText; }).join('\n');
-    } else {
-      var pre = activePanel.querySelector('pre');
-      text = pre ? pre.innerText : '';
-    }
-  }
-  try {
-    await navigator.clipboard.writeText(text);
-    var old = btn.textContent;
-    btn.textContent = 'Copied';
-    setTimeout(function () { btn.textContent = old; }, 1200);
-  } catch (e) {
-    btn.textContent = 'Copy failed';
-    setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
-  }
 }
 </script>
 </body>
